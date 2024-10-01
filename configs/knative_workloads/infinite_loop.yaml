@@ -1,0 +1,18 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: infinite-loop-app
+  namespace: default
+spec:
+  template:
+    spec:
+      containers:
+        - image: shubetanfox/infinite-loop-app:latest # Replace with your Docker image
+          ports:
+            - name: h2c # For GRPC support (if needed)
+              containerPort: 50051 # Adjust the port as per your application needs
+          env:
+            - name: GUEST_PORT # Port on which the firecracker-containerd container is accepting requests
+              value: "50051"
+            - name: GUEST_IMAGE # Container image to use for firecracker-containerd container
+              value: "shubetanfox/infinite-loop-app:latest"
