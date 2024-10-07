@@ -1,18 +1,17 @@
-# Use an official Alpine image
-FROM alpine:latest as var_workload
+FROM vhiveease/py_grpc:builder_grpc as builder_workload
+COPY --from=vhiveease/py_grpc:builder_grpc /root/.local /root/.local
+COPY requirements.txt .
+RUN pip3 install --user -r requirements.txt
 
-# Install necessary packages (GCC, musl for standard C library, and pthreads)
-RUN apk update && \
-    apk add --no-cache gcc g++ musl-dev
+FROM vhiveease/py_grpc:base as var_workload
+COPY *.py /
+COPY --from=builder_workload /root/.local /root/.local
+RUN apk add libstdc++ --update --no-cache
 
-# Copy the C source file into the root directory of the container
-COPY infinite_loop.c /
+RUN mkdir -p /tmp/vhive-logs && chmod -R 777 /tmp/vhive-logs
 
-# Compile the C program with pthread support
-RUN gcc -o /infinite_loop /infinite_loop.c -lpthread
+EXPOSE 50051
 
-# Define the stop signal as SIGKILL
 STOPSIGNAL SIGKILL
 
-# Command to run the compiled program
-CMD ["/infinite_loop"]
+CMD ["/usr/local/bin/python", "/server.py"]
