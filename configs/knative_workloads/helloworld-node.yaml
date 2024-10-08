@@ -4,6 +4,7 @@ metadata:
   namespace: default
 spec:
   template:
+    nodeName:
     spec:
       containers:
         - image: crccheck/hello-world:latest # Stub image. See https://github.com/vhive-serverless/vhive/issues/68
@@ -14,10 +15,4 @@ spec:
             - name: GUEST_PORT # Port on which the firecracker-containerd container is accepting requests
               value: "50051"
             - name: GUEST_IMAGE # Container image to use for firecracker-containerd container
-              value: "shubetanfox/infinite_loop:var_workload"
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 50051 # Ensure this matches the gRPC port your container is listening on
-          #   initialDelaySeconds: 30 # Adjust the delay as needed based on your function's startup time
-          #   periodSeconds: 10
+              value: "ghcr.io/ease-lab/helloworld:var_workload"
