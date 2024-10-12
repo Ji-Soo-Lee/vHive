@@ -4,7 +4,6 @@ metadata:
   namespace: default
 spec:
   template:
-    nodeName:
     spec:
       containers:
         - image: crccheck/hello-world:latest # Stub image. See https://github.com/vhive-serverless/vhive/issues/68
