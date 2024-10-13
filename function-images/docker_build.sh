@@ -44,10 +44,11 @@ popd > /dev/null
 
 cd $DIR
 
+# Ensure TAG is defined
 TAG=var_workload
 
-for wld in $@; do
-    wld=`basename $wld`
+for wld in "$@"; do
+    wld=$(basename "$wld")
     pushd $DIR/$wld > /dev/null
     docker pull $DOCKERHUB_ACCOUNT/$wld:builder_workload || true
     docker pull $DOCKERHUB_ACCOUNT/$wld:$TAG || true
@@ -59,12 +60,14 @@ for wld in $@; do
         --tag $DOCKERHUB_ACCOUNT/$wld:builder_workload . && \
         docker push $DOCKERHUB_ACCOUNT/$wld:builder_workload
 
-    docker build --target $TAG \
+    # Build and tag the final image
+    docker build \
         --cache-from=$DOCKERHUB_ACCOUNT/py_grpc:base \
         --cache-from=$DOCKERHUB_ACCOUNT/py_grpc:builder_grpc \
         --cache-from=$DOCKERHUB_ACCOUNT/$wld:builder_workload \
         --cache-from=$DOCKERHUB_ACCOUNT/$wld:$TAG \
         --tag $DOCKERHUB_ACCOUNT/$wld:$TAG . && \
         docker push $DOCKERHUB_ACCOUNT/$wld:$TAG
+
     popd > /dev/null
 done
