@@ -1,0 +1,22 @@
+apiVersion: kubescheduler.config.k8s.io/v1
+kind: KubeSchedulerConfiguration
+leaderElection:
+  leaderElect: false
+clientConnection:
+  kubeconfig: "/etc/kubernetes/scheduler.conf"
+profiles:
+- schedulerName: default-scheduler
+  plugins:
+    score:
+      enabled:
+       - name: LowRiskOverCommitment
+  pluginConfig:
+  - name: LowRiskOverCommitment
+    args:
+      smoothingWindowSize: 5
+      riskLimitWeights:
+        cpu: 0.5
+        memory: 0.5
+      metricProvider:
+        type: Prometheus
+        address: http://prometheus-k8s.monitoring.svc.cluster.local:9090

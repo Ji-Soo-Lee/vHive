@@ -1,0 +1,20 @@
+apiVersion: kubescheduler.config.k8s.io/v1
+kind: KubeSchedulerConfiguration
+leaderElection:
+  leaderElect: false
+clientConnection:
+  kubeconfig: "/etc/kubernetes/scheduler.conf"
+profiles:
+- schedulerName: default-scheduler
+  plugins:
+    score:
+      enabled:
+       - name: LoadVariationRiskBalancing
+  pluginConfig:
+  - name: LoadVariationRiskBalancing
+    args:
+      safeVarianceMargin: 1
+      safeVarianceSensitivity: 2
+      metricProvider:
+        type: Prometheus
+        address: http://prometheus-k8s.monitoring.svc.cluster.local:9090
